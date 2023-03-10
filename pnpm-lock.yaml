@@ -7,21 +7,29 @@ specifiers:
   '@types/react': ^18.0.27
   '@types/react-dom': ^18.0.10
   '@vitejs/plugin-react-swc': ^3.0.0
+  rdndmb-html5-to-touch: ^8.0.0
   react: ^18.2.0
   react-dnd: ^16.0.1
   react-dnd-html5-backend: ^16.0.1
+  react-dnd-multi-backend: ^8.0.0
+  react-dnd-touch-backend: ^16.0.1
   react-dom: ^18.2.0
   typescript: ^4.9.3
+  vconsole: ^3.15.0
   vite: ^4.1.0
 
 dependencies:
   '@emotion/react': 11.10.6_pmekkgnqduwlme35zpnqhenc34
   '@emotion/styled': 11.10.6_oouaibmszuch5k64ms7uxp2aia
   '@mui/material': 5.11.12_xqeqsl5kvjjtyxwyi3jhw3yuli
+  rdndmb-html5-to-touch: 8.0.0
   react: 18.2.0
   react-dnd: 16.0.1_pmekkgnqduwlme35zpnqhenc34
   react-dnd-html5-backend: 16.0.1
+  react-dnd-multi-backend: 8.0.0_b57ckgxx77373rey5kttpzfpiu
+  react-dnd-touch-backend: 16.0.1
   react-dom: 18.2.0_react@18.2.0
+  vconsole: 3.15.0
 
 devDependencies:
   '@types/react': 18.0.28
@@ -769,6 +777,16 @@ packages:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
     dev: false
 
+  /copy-text-to-clipboard/3.0.1:
+    resolution: {integrity: sha512-rvVsHrpFcL4F2P8ihsoLdFHmd404+CMg71S756oRSeQgqk51U3kicGdnvfkrxva0xXH92SjGS62B0XIJsbh+9Q==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /core-js/3.29.0:
+    resolution: {integrity: sha512-VG23vuEisJNkGl6XQmFJd3rEG/so/CNatqeE+7uZAwTSwFeB/qaO0be8xZYUNWprJ/GIwL8aMt9cj1kvbpTZhg==}
+    requiresBuild: true
+    dev: false
+
   /cosmiconfig/7.1.0:
     resolution: {integrity: sha512-AdmX6xUzdNASswsFtmwSt7Vj8po9IuqXm0UXz7QKPuEUmPB4XyjGfaAr2PSuELMwkRMVH1EpIkX5bTZGRB3eCA==}
     engines: {node: '>=10'}
@@ -789,6 +807,10 @@ packages:
       '@react-dnd/asap': 5.0.2
       '@react-dnd/invariant': 4.0.2
       redux: 4.2.1
+    dev: false
+
+  /dnd-multi-backend/8.0.0:
+    resolution: {integrity: sha512-5iFo8USv3+q0kVRTm9zsuyi/5GRZEA6fDZKr9ZpmV5pUdHmL9ktL/2c2Anw8T2tnpDDw8FM3k2cvqyMAKhWd/w==}
     dev: false
 
   /dom-helpers/5.2.1:
@@ -916,6 +938,10 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
+  /mutation-observer/1.0.3:
+    resolution: {integrity: sha512-M/O/4rF2h776hV7qGMZUH3utZLO/jK7p8rnNgGkjKUw8zCGjRQPxB8z6+5l8+VjRUQ3dNYu4vjqXYLr+U8ZVNA==}
+    dev: false
+
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -973,9 +999,48 @@ packages:
       react-is: 16.13.1
     dev: false
 
+  /rdndmb-html5-to-touch/8.0.0:
+    resolution: {integrity: sha512-pBWigLQKJMD4hV+dwcEqcDB4dgGD7LD2ZCtT2gi8Yw4cef2pmp/ZvPZpYVxpAesJXOIDNFhmtYzZIsf9noKHmQ==}
+    dependencies:
+      dnd-multi-backend: 8.0.0
+      react-dnd-html5-backend: 16.0.1
+      react-dnd-touch-backend: 16.0.1
+    dev: false
+
   /react-dnd-html5-backend/16.0.1:
     resolution: {integrity: sha512-Wu3dw5aDJmOGw8WjH1I1/yTH+vlXEL4vmjk5p+MHxP8HuHJS1lAGeIdG/hze1AvNeXWo/JgULV87LyQOr+r5jw==}
     dependencies:
+      dnd-core: 16.0.1
+    dev: false
+
+  /react-dnd-multi-backend/8.0.0_b57ckgxx77373rey5kttpzfpiu:
+    resolution: {integrity: sha512-sYJmGUWRJsTa4sF/bxFu4tF/KSk668vf1TWbDqGdpvR9ltik/lBBqgihV3KLVtRRWytR/8wJCd9K5slj2Ve1tg==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.2 || ^18.0.0
+      react-dom: ^16.14.0 || ^17.0.2 || ^18.0.0
+    dependencies:
+      dnd-multi-backend: 8.0.0
+      react: 18.2.0
+      react-dnd-preview: 8.0.0_ajxydgv6wvb6awzgtymnmahb3a
+      react-dom: 18.2.0_react@18.2.0
+    transitivePeerDependencies:
+      - react-dnd
+    dev: false
+
+  /react-dnd-preview/8.0.0_ajxydgv6wvb6awzgtymnmahb3a:
+    resolution: {integrity: sha512-pKDpJxaGya00tqPqswGHN6d1lmXe26gGkiXSb9xsDGEXMS+efjz4YAid9tKyaKNWJMU8hJOcUmJWTQpdi22P2g==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.2 || ^18.0.0
+      react-dnd: ^16.0.1
+    dependencies:
+      react: 18.2.0
+      react-dnd: 16.0.1_pmekkgnqduwlme35zpnqhenc34
+    dev: false
+
+  /react-dnd-touch-backend/16.0.1:
+    resolution: {integrity: sha512-NonoCABzzjyWGZuDxSG77dbgMZ2Wad7eQiCd/ECtsR2/NBLTjGksPUx9UPezZ1nQ/L7iD130Tz3RUshL/ClKLA==}
+    dependencies:
+      '@react-dnd/invariant': 4.0.2
       dnd-core: 16.0.1
     dev: false
 
@@ -1114,6 +1179,15 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
+
+  /vconsole/3.15.0:
+    resolution: {integrity: sha512-8hq7wabPcRucSWQyN7/1tthMawP9JPvM95zgtMHpPknMMMCKj+abpoK7P7oKK4B0qw58C24Mdvo9+raUdpHyVQ==}
+    dependencies:
+      '@babel/runtime': 7.21.0
+      copy-text-to-clipboard: 3.0.1
+      core-js: 3.29.0
+      mutation-observer: 1.0.3
+    dev: false
 
   /vite/4.1.4:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
