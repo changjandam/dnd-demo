@@ -14,7 +14,14 @@ import { Box } from '@mui/material';
 const itemsContext = createContext<{
   items: Item[];
   setItems: Dispatch<SetStateAction<Item[]>>;
-}>({ items: [], setItems: () => {} });
+  selectedItem: Item | null;
+  setSelectedItem: Dispatch<SetStateAction<Item | null>>;
+}>({
+  items: [],
+  setItems: () => {},
+  selectedItem: null,
+  setSelectedItem: () => {},
+});
 
 const filterItems = (items: Item[], date: Item['date']) => {
   return items.filter((item) => item.date === date);
@@ -26,17 +33,14 @@ type Item = {
   date: string | null;
 };
 
-const constItems: Item[] = [
-  { id: 1, content: '時段1', date: null },
-  { id: 2, content: '時段2', date: null },
-  { id: 3, content: '時段1~2', date: null },
-];
+const constItems: Item[] = [{ id: 1, content: '員工', date: null }];
 
 const ItemTypes = {
-  CONTENT: 'content',
+  CONTENT: '員工',
 };
 
 const Item: FC<{ item: Item }> = ({ item }) => {
+  const { setSelectedItem, selectedItem } = useContext(itemsContext);
   const [{ offset, isDragging }, drag] = useDrag({
     item,
     type: ItemTypes.CONTENT,
@@ -47,6 +51,8 @@ const Item: FC<{ item: Item }> = ({ item }) => {
       };
     },
   });
+
+  const showBorder = isDragging || selectedItem?.id === item.id;
 
   return (
     <Box
@@ -60,11 +66,13 @@ const Item: FC<{ item: Item }> = ({ item }) => {
         justifyContent: 'center',
         alignItems: 'center',
         opacity: isDragging ? 0.5 : 1,
-        border: `3px solid ${isDragging ? 'red' : 'transparent'}`,
+        border: `3px solid ${showBorder ? 'red' : 'transparent'}`,
         transform: isDragging
           ? `translate(${offset?.x}px, ${offset?.y}px)`
           : '',
       }}
+      // ={() => setSelectedItem(item)}
+      onPointerDown={() => setSelectedItem(item)}
     >
       {item.content}
     </Box>
@@ -72,6 +80,8 @@ const Item: FC<{ item: Item }> = ({ item }) => {
 };
 
 const Container: FC<PropsWithChildren> = ({ children }) => {
+  const { setSelectedItem } = useContext(itemsContext);
+
   return (
     <Box
       sx={{
@@ -88,19 +98,24 @@ const Container: FC<PropsWithChildren> = ({ children }) => {
 };
 
 const DropZone: FC<{ date: string }> = ({ date }) => {
-  const { setItems } = useContext(itemsContext);
+  const { setItems, selectedItem, setSelectedItem } = useContext(itemsContext);
+
+  const handleItemChange = () => {
+    setItems((items) => {
+      return items.map((i) => {
+        console.log({ i, selectedItem });
+        if (i.id === selectedItem?.id) {
+          return { ...i, date };
+        }
+        return i;
+      });
+    });
+    setSelectedItem(null);
+  };
+
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.CONTENT,
-    drop: (item: Item) => {
-      setItems((items) => {
-        return items.map((i) => {
-          if (i.id === item.id) {
-            return { ...i, date };
-          }
-          return i;
-        });
-      });
-    },
+    drop: handleItemChange,
     collect(monitor) {
       return {
         canDrop: monitor.canDrop(),
@@ -109,10 +124,13 @@ const DropZone: FC<{ date: string }> = ({ date }) => {
     },
   });
 
+  const show = canDrop || selectedItem?.content === ItemTypes.CONTENT;
+
   return (
     <Box
       ref={drop}
       sx={{
+        display: show ? 'block' : 'none',
         width: '90%',
         height: '90%',
         position: 'absolute',
@@ -121,13 +139,15 @@ const DropZone: FC<{ date: string }> = ({ date }) => {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         background: isOver ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
-        border: `3px dashed ${canDrop ? 'blue' : 'transparent'}`,
+        border: '3px dashed blue',
       }}
+      onClick={handleItemChange}
     />
   );
 };
 
-const Column: FC<{ items: Item[]; date: Item['date'] }> = ({ items, date }) => {
+const Column: FC<{ date: Item['date'] }> = ({ date }) => {
+  const { items } = useContext(itemsContext);
   const filteredItems = date === null ? items : filterItems(items, date);
 
   return (
@@ -145,7 +165,7 @@ const Column: FC<{ items: Item[]; date: Item['date'] }> = ({ items, date }) => {
       }}
     >
       {filteredItems.map((item) => (
-        <Item item={item} />
+        <Item item={item} key={item.id} />
       ))}
       {date !== null && <DropZone date='day1' />}
     </Box>
@@ -154,6 +174,7 @@ const Column: FC<{ items: Item[]; date: Item['date'] }> = ({ items, date }) => {
 
 const App = () => {
   const [items, setItems] = useState<Item[]>(constItems);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   return (
     <DndProvider
       backend={TouchBackend}
@@ -161,10 +182,20 @@ const App = () => {
         enableMouseEvents: true,
       }}
     >
-      <itemsContext.Provider value={{ items, setItems }}>
+      <itemsContext.Provider
+        value={{ items, setItems, selectedItem, setSelectedItem }}
+      >
         <Container>
-          <Column items={items} date={null} />
-          <Column items={items} date={'day1'} />
+          <Column date={null} />
+          <button
+            onClick={() => {
+              setItems(constItems);
+              setSelectedItem(null);
+            }}
+          >
+            重置
+          </button>
+          <Column date={'day1'} />
         </Container>
       </itemsContext.Provider>
     </DndProvider>
