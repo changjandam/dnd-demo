@@ -15,7 +15,6 @@ specifiers:
   react-dnd-touch-backend: ^16.0.1
   react-dom: ^18.2.0
   typescript: ^4.9.3
-  vconsole: ^3.15.0
   vite: ^4.1.0
 
 dependencies:
@@ -29,7 +28,6 @@ dependencies:
   react-dnd-multi-backend: 8.0.0_b57ckgxx77373rey5kttpzfpiu
   react-dnd-touch-backend: 16.0.1
   react-dom: 18.2.0_react@18.2.0
-  vconsole: 3.15.0
 
 devDependencies:
   '@types/react': 18.0.28
@@ -777,16 +775,6 @@ packages:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
     dev: false
 
-  /copy-text-to-clipboard/3.0.1:
-    resolution: {integrity: sha512-rvVsHrpFcL4F2P8ihsoLdFHmd404+CMg71S756oRSeQgqk51U3kicGdnvfkrxva0xXH92SjGS62B0XIJsbh+9Q==}
-    engines: {node: '>=12'}
-    dev: false
-
-  /core-js/3.29.0:
-    resolution: {integrity: sha512-VG23vuEisJNkGl6XQmFJd3rEG/so/CNatqeE+7uZAwTSwFeB/qaO0be8xZYUNWprJ/GIwL8aMt9cj1kvbpTZhg==}
-    requiresBuild: true
-    dev: false
-
   /cosmiconfig/7.1.0:
     resolution: {integrity: sha512-AdmX6xUzdNASswsFtmwSt7Vj8po9IuqXm0UXz7QKPuEUmPB4XyjGfaAr2PSuELMwkRMVH1EpIkX5bTZGRB3eCA==}
     engines: {node: '>=10'}
@@ -936,10 +924,6 @@ packages:
     hasBin: true
     dependencies:
       js-tokens: 4.0.0
-    dev: false
-
-  /mutation-observer/1.0.3:
-    resolution: {integrity: sha512-M/O/4rF2h776hV7qGMZUH3utZLO/jK7p8rnNgGkjKUw8zCGjRQPxB8z6+5l8+VjRUQ3dNYu4vjqXYLr+U8ZVNA==}
     dev: false
 
   /nanoid/3.3.4:
@@ -1179,15 +1163,6 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
-
-  /vconsole/3.15.0:
-    resolution: {integrity: sha512-8hq7wabPcRucSWQyN7/1tthMawP9JPvM95zgtMHpPknMMMCKj+abpoK7P7oKK4B0qw58C24Mdvo9+raUdpHyVQ==}
-    dependencies:
-      '@babel/runtime': 7.21.0
-      copy-text-to-clipboard: 3.0.1
-      core-js: 3.29.0
-      mutation-observer: 1.0.3
-    dev: false
 
   /vite/4.1.4:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}

@@ -6,175 +6,106 @@ import {
   useContext,
   Dispatch,
   SetStateAction,
+  useEffect,
 } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import bg from './assets/bg.jpg';
 
-const itemsContext = createContext<{
-  items: Item[];
-  setItems: Dispatch<SetStateAction<Item[]>>;
-  selectedItem: Item | null;
-  setSelectedItem: Dispatch<SetStateAction<Item | null>>;
-}>({
-  items: [],
-  setItems: () => {},
-  selectedItem: null,
-  setSelectedItem: () => {},
+interface DragItemContextProps {
+  selectedId: string | null;
+  setSelectedId: Dispatch<SetStateAction<string | null>>;
+}
+
+const DragItemContext = createContext<DragItemContextProps>({
+  selectedId: null,
+  setSelectedId: () => {},
 });
 
-const filterItems = (items: Item[], date: Item['date']) => {
-  return items.filter((item) => item.date === date);
-};
+const id = '1';
 
-type Item = {
-  id: number;
-  content: string;
-  date: string | null;
-};
+const DragItem = () => {
+  const { selectedId, setSelectedId } = useContext(DragItemContext);
 
-const constItems: Item[] = [{ id: 1, content: '員工', date: null }];
-
-const ItemTypes = {
-  CONTENT: '員工',
-};
-
-const Item: FC<{ item: Item }> = ({ item }) => {
-  const { setSelectedItem, selectedItem } = useContext(itemsContext);
-  const [{ offset, isDragging }, drag] = useDrag({
-    item,
-    type: ItemTypes.CONTENT,
-    collect: (monitor) => {
-      return {
-        offset: monitor.getDifferenceFromInitialOffset(),
-        isDragging: !!monitor.isDragging(),
-      };
-    },
+  const [{ isDragging, offset }, drag] = useDrag({
+    type: 'item',
+    collect: (monitor) => ({
+      offset: monitor.getDifferenceFromInitialOffset(),
+      isDragging: !!monitor.isDragging(),
+    }),
   });
 
-  const showBorder = isDragging || selectedItem?.id === item.id;
+  useEffect(() => {
+    if (isDragging) {
+      setSelectedId(id);
+    }
+  }, [isDragging]);
+
+  const isSelected = selectedId === id;
+
+  console.log({ isDragging, isSelected });
 
   return (
     <Box
       ref={drag}
       sx={{
-        width: 100,
-        height: 50,
-        bgcolor: 'grey.300',
-        borderRadius: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        boxSizing: 'border-box',
+        width: '202px',
+        height: '68px',
+        background: isSelected ? '#EDF4F7' : '#FFFFFF',
+        borderRadius: '3px',
+        border: `1px solid ${isSelected ? '#006BB5' : '#CACACA'}`,
         opacity: isDragging ? 0.5 : 1,
-        border: `3px solid ${showBorder ? 'red' : 'transparent'}`,
-        transform: isDragging
-          ? `translate(${offset?.x}px, ${offset?.y}px)`
-          : '',
-      }}
-      // ={() => setSelectedItem(item)}
-      onPointerDown={() => setSelectedItem(item)}
-    >
-      {item.content}
-    </Box>
-  );
-};
-
-const Container: FC<PropsWithChildren> = ({ children }) => {
-  const { setSelectedItem } = useContext(itemsContext);
-
-  return (
-    <Box
-      sx={{
-        width: '100mvw',
-        height: '100mvh',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
-      {children}
-    </Box>
-  );
-};
-
-const DropZone: FC<{ date: string }> = ({ date }) => {
-  const { setItems, selectedItem, setSelectedItem } = useContext(itemsContext);
-
-  const handleItemChange = () => {
-    setItems((items) => {
-      return items.map((i) => {
-        console.log({ i, selectedItem });
-        if (i.id === selectedItem?.id) {
-          return { ...i, date };
-        }
-        return i;
-      });
-    });
-    setSelectedItem(null);
-  };
-
-  const [{ canDrop, isOver }, drop] = useDrop({
-    accept: ItemTypes.CONTENT,
-    drop: handleItemChange,
-    collect(monitor) {
-      return {
-        canDrop: monitor.canDrop(),
-        isOver: monitor.isOver(),
-      };
-    },
-  });
-
-  const show = canDrop || selectedItem?.content === ItemTypes.CONTENT;
-
-  return (
-    <Box
-      ref={drop}
-      sx={{
-        display: show ? 'block' : 'none',
-        width: '90%',
-        height: '90%',
-        position: 'absolute',
-        borderRadius: 1,
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        background: isOver ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
-        border: '3px dashed blue',
-      }}
-      onClick={handleItemChange}
-    />
-  );
-};
-
-const Column: FC<{ date: Item['date'] }> = ({ date }) => {
-  const { items } = useContext(itemsContext);
-  const filteredItems = date === null ? items : filterItems(items, date);
-
-  return (
-    <Box
-      sx={{
-        position: 'relative',
-        width: 120,
-        border: '1px solid grey',
-        borderRadius: 1,
-        minHeight: 200,
+        padding: '10px',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
+        position: 'fixed',
+        // top: '171px',
+        // left: '30px',
+        top: `${171 + (offset?.y || 0)}px`,
+        left: `${30 + (offset?.x || 0)}px`,
       }}
+      onClick={() => setSelectedId(id)}
     >
-      {filteredItems.map((item) => (
-        <Item item={item} key={item.id} />
-      ))}
-      {date !== null && <DropZone date='day1' />}
+      <Box
+        sx={{
+          display: 'flex',
+        }}
+      >
+        <Box
+          sx={{
+            background: '#0065A5',
+            color: '#FFFFFF',
+            width: '50px',
+            height: '25px',
+            borderRadius: '12.5px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: '20px',
+          }}
+        >
+          宅內
+        </Box>
+        <Typography>陳先生</Typography>
+      </Box>
+      <Typography
+        sx={{
+          font: '12px/19px Noto Sans TC',
+          color: '#959595',
+          letterSpacing: '0.14px',
+        }}
+      >
+        ※ 本月已排班時數159
+      </Typography>
     </Box>
   );
 };
 
 const App = () => {
-  const [items, setItems] = useState<Item[]>(constItems);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   return (
     <DndProvider
       backend={TouchBackend}
@@ -182,22 +113,25 @@ const App = () => {
         enableMouseEvents: true,
       }}
     >
-      <itemsContext.Provider
-        value={{ items, setItems, selectedItem, setSelectedItem }}
+      <DragItemContext.Provider
+        value={{
+          selectedId,
+          setSelectedId,
+        }}
       >
-        <Container>
-          <Column date={null} />
-          <button
-            onClick={() => {
-              setItems(constItems);
-              setSelectedItem(null);
-            }}
-          >
-            重置
-          </button>
-          <Column date={'day1'} />
-        </Container>
-      </itemsContext.Provider>
+        <Box
+          sx={{
+            width: '1000px',
+            height: '625px',
+            background: `url(${bg}) no-repeat center center/cover`,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+          }}
+        >
+          <DragItem />
+        </Box>
+      </DragItemContext.Provider>
     </DndProvider>
   );
 };
