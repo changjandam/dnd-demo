@@ -1,205 +1,112 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { useDrag, useDrop, DndProvider } from 'react-dnd';
+import { createContext, useState, useContext } from 'react';
+import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import bg from './assets/bg.jpg';
+
+import DropZone from './DropZone';
+import DragItem from './DragItem';
 
 import { Box, Typography } from '@mui/material';
 
 interface StateContextProps {
   isDragFinished: boolean;
   setIsDragFinished: (isDragFinished: boolean) => void;
+  dragItemSelected: boolean;
+  setDragItemSelected: (dropItemSelected: boolean) => void;
+  dropZoneSelected: boolean;
+  setDropZoneSelected: (dropZoneSelected: boolean) => void;
+  coverItems: boolean;
+  setCoverItems: (coverItems: boolean) => void;
 }
 
-const StateContext = createContext<StateContextProps>({
+export const StateContext = createContext<StateContextProps>({
   isDragFinished: false,
   setIsDragFinished: () => {},
+  dragItemSelected: false,
+  setDragItemSelected: () => {},
+  dropZoneSelected: false,
+  setDropZoneSelected: () => {},
+  coverItems: false,
+  setCoverItems: () => {},
 });
 
-const dragItemStyles = {
-  selected: {
-    bg: '#EDF4F7',
-    border: '#006BB5',
-  },
-  unselected: {
-    bg: '#FFFFFF',
-    border: '#CACACA',
-  },
-};
+export const useEventState = () => {
+  const {
+    isDragFinished,
+    setIsDragFinished,
+    dragItemSelected,
+    setDragItemSelected,
+    dropZoneSelected,
+    setDropZoneSelected,
+    coverItems,
+    setCoverItems,
+  } = useContext(StateContext);
 
-const DragItem = () => {
-  const [selected, setSelected] = useState(false);
-
-  const [{ isDragging, offset, didDrop }, drag] = useDrag({
-    type: 'item',
-    item: { name: '陳先生' },
-    collect(monitor) {
-      return {
-        isDragging: monitor.isDragging(),
-        offset: monitor.getDifferenceFromInitialOffset(),
-        didDrop: monitor.didDrop(),
-      };
-    },
-  });
-
-  console.log('drag', { isDragging, offset, didDrop });
-
-  useEffect(() => {
-    if (isDragging) {
-      setSelected(true);
-    }
-  }, [isDragging]);
-
-  useEffect(() => {
-    if (didDrop) {
-      setSelected(false);
-    }
-  }, [didDrop]);
-
-  const style = selected ? dragItemStyles.selected : dragItemStyles.unselected;
-
-  return (
-    <Box
-      ref={drag}
-      sx={{
-        boxSizing: 'border-box',
-        width: '202px',
-        height: '68px',
-        background: style.bg,
-        borderRadius: '3px',
-        border: `1px solid ${style.border}`,
-        opacity: isDragging ? 0.5 : 1,
-        padding: '10px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        position: 'fixed',
-        top: `${171 + (offset?.y || 0)}px`,
-        left: `${30 + (offset?.x || 0)}px`,
-        zIndex: 2,
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-        }}
-      >
-        <Box
-          sx={{
-            background: '#0065A5',
-            color: '#FFFFFF',
-            width: '50px',
-            height: '25px',
-            borderRadius: '12.5px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginRight: '20px',
-          }}
-        >
-          宅內
-        </Box>
-        <Typography>陳先生</Typography>
-      </Box>
-      <Typography
-        sx={{
-          font: '12px/19px Noto Sans TC',
-          color: '#959595',
-          letterSpacing: '0.14px',
-        }}
-      >
-        ※ 本月已排班時數159
-      </Typography>
-    </Box>
-  );
-};
-
-const dropZoneStyles = {
-  init: {
-    bg: '#939393',
-    border: '#939393',
-    color: '#FFFFFF',
-  },
-  selected: {
-    bg: '#EDF4F7',
-    border: '#006BB5',
-    color: '#006BB5',
-  },
-  hover: {
-    bg: '#FFFFFF',
-    border: '#CACACA',
-    color: '#383838',
-  },
-  dropped: {
-    bg: '#E57C73',
-    border: '#E57C73',
-    color: '#FFFFFF',
-  },
-};
-
-const DropZone = () => {
-  const { isDragFinished, setIsDragFinished } = useContext(StateContext);
-  const [selected, setSelected] = useState(false);
-
-  const [{ isOver, canDrop }, drop] = useDrop({
-    accept: 'item',
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-    drop: (item, monitor) => {
-      console.log('drop fn', { item, monitor });
-      setIsDragFinished(true);
-    },
-  });
-
-  const getStyle = () => {
-    if (isDragFinished) {
-      return dropZoneStyles.dropped;
-    }
-    if (isOver) {
-      return dropZoneStyles.hover;
-    }
-    if (selected) {
-      return dropZoneStyles.selected;
-    }
-    return dropZoneStyles.init;
+  const initState = () => {
+    console.log('initState');
+    setIsDragFinished(false);
+    setDragItemSelected(false);
+    setDropZoneSelected(false);
+    setCoverItems(true);
   };
 
-  const style = getStyle();
+  const selectDropZone = () => {
+    console.log('selectDropZone');
+    setDropZoneSelected(true);
+    setCoverItems(false);
+  };
 
-  console.log('drop', { isDragFinished, isOver, selected, canDrop });
+  const selectDragItem = () => {
+    console.log('selectDragItem');
+    setDragItemSelected(true);
+  };
 
-  return (
-    <Box
-      ref={drop}
-      sx={{
-        boxSizing: 'border-box',
-        padding: '5px',
-        border: `1px solid ${style.border}`,
-        background: style.bg,
-        color: style.color,
-        height: '103px',
-        width: '99px',
-        borderRadius: '3px',
-        position: 'fixed',
-        top: '429px',
-        left: '867px',
-        zIndex: 1,
-        font: '12px/19px Noto Sans TC',
-        letterSpacing: '0.14px',
-      }}
-      onClick={() => setSelected((prev) => !prev)}
-    >
-      {isDragFinished ? '陳先生' : '廚房清潔'}
-    </Box>
-  );
+  const finishState = () => {
+    console.log('finishState');
+    setIsDragFinished(true);
+    setDragItemSelected(false);
+    setDropZoneSelected(false);
+    setCoverItems(true);
+  };
+
+  return {
+    initState,
+    selectDropZone,
+    selectDragItem,
+    finishState,
+    isDragFinished,
+    dragItemSelected,
+    dropZoneSelected,
+    coverItems,
+  };
 };
 
 const Demo = () => {
   const [isDragFinished, setIsDragFinished] = useState(false);
+  const [dragItemSelected, setDragItemSelected] = useState(false);
+  const [dropZoneSelected, setDropZoneSelected] = useState(false);
+  const [coverItems, setCoverItems] = useState(true);
+
+  console.log({
+    isDragFinished,
+    dragItemSelected,
+    dropZoneSelected,
+    coverItems,
+  });
 
   return (
-    <StateContext.Provider value={{ isDragFinished, setIsDragFinished }}>
+    <StateContext.Provider
+      value={{
+        isDragFinished,
+        setIsDragFinished,
+        dragItemSelected,
+        setDragItemSelected,
+        dropZoneSelected,
+        setDropZoneSelected,
+        coverItems,
+        setCoverItems,
+      }}
+    >
       <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
         <Box
           sx={{
@@ -209,10 +116,58 @@ const Demo = () => {
             position: 'fixed',
             top: 0,
             left: 0,
+            display: 'flex',
           }}
         >
-          <DragItem />
           <DropZone />
+          <DragItem />
+          {coverItems && (
+            <Box
+              sx={{
+                position: 'fixed',
+                top: '171px',
+                left: '30px',
+                width: '205px',
+                height: '300px',
+                background: '#FFFFFF',
+                zIndex: 999,
+              }}
+            />
+          )}
+          <Box
+            sx={{
+              background: '#FFFFFF',
+              position: 'fixed',
+              top: '136px',
+              left: '30px',
+              display: 'flex',
+              gap: '10px',
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: '18px',
+                letterSpacing: '0.32px',
+              }}
+            >
+              可排人員
+            </Typography>
+            <Box
+              sx={{
+                fontSize: '15px',
+                color: '#FFFFFF',
+                background: '#DD6763',
+                borderRadius: '50%',
+                width: '25px',
+                height: '25px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {isDragFinished ? '2' : '3'}
+            </Box>
+          </Box>
         </Box>
       </DndProvider>
     </StateContext.Provider>
