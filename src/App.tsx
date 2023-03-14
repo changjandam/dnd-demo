@@ -1,6 +1,4 @@
 import {
-  FC,
-  PropsWithChildren,
   useState,
   createContext,
   useContext,
@@ -14,19 +12,19 @@ import { Box, Typography } from '@mui/material';
 import bg from './assets/bg.jpg';
 
 interface DragItemContextProps {
-  selectedId: string | null;
-  setSelectedId: Dispatch<SetStateAction<string | null>>;
+  selectedName: string | null;
+  setSelectedName: Dispatch<SetStateAction<string | null>>;
 }
 
 const DragItemContext = createContext<DragItemContextProps>({
-  selectedId: null,
-  setSelectedId: () => {},
+  selectedName: null,
+  setSelectedName: () => {},
 });
 
-const id = '1';
+const name = '陳先生';
 
 const DragItem = () => {
-  const { selectedId, setSelectedId } = useContext(DragItemContext);
+  const { selectedName, setSelectedName } = useContext(DragItemContext);
 
   const [{ isDragging, offset }, drag] = useDrag({
     type: 'item',
@@ -38,13 +36,11 @@ const DragItem = () => {
 
   useEffect(() => {
     if (isDragging) {
-      setSelectedId(id);
+      setSelectedName(name);
     }
   }, [isDragging]);
 
-  const isSelected = selectedId === id;
-
-  console.log({ isDragging, isSelected });
+  const isSelected = selectedName === name;
 
   return (
     <Box
@@ -62,12 +58,11 @@ const DragItem = () => {
         flexDirection: 'column',
         justifyContent: 'space-between',
         position: 'fixed',
-        // top: '171px',
-        // left: '30px',
         top: `${171 + (offset?.y || 0)}px`,
         left: `${30 + (offset?.x || 0)}px`,
+        zIndex: 2,
       }}
-      onClick={() => setSelectedId(id)}
+      onClick={() => setSelectedName(name)}
     >
       <Box
         sx={{
@@ -104,6 +99,78 @@ const DragItem = () => {
   );
 };
 
+const initContent = '廚房清潔';
+
+const dropZoneStyles = {
+  init: {
+    bg: '#EDF4F7',
+    border: '#006BB5',
+    color: '#006BB5',
+  },
+  hover: {
+    bg: '#FFFFFF',
+    border: '#CACACA',
+    color: '#383838',
+  },
+  dropped: {
+    bg: '#E57C73',
+    border: '#E57C73',
+    color: '#FFFFFF',
+  },
+};
+
+const DropZone = () => {
+  const { selectedName, setSelectedName } = useContext(DragItemContext);
+  const [currentStyle, setCurrentStyle] = useState(dropZoneStyles.init);
+  const [content, setContent] = useState(initContent);
+
+  const [{ isOver, canDrop }, drop] = useDrop({
+    accept: 'item',
+    drop: () => {
+      setContent(selectedName || initContent);
+      setSelectedName(null);
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop(),
+    }),
+  });
+
+  useEffect(() => {
+    if (isOver && canDrop) {
+      setCurrentStyle(dropZoneStyles.hover);
+    } else if (content !== initContent) {
+      setCurrentStyle(dropZoneStyles.dropped);
+    } else {
+      setCurrentStyle(dropZoneStyles.init);
+    }
+  }, [isOver, canDrop]);
+
+  console.log(currentStyle);
+
+  return (
+    <Box
+      ref={drop}
+      sx={{
+        boxSizing: 'border-box',
+        padding: '5px',
+        border: `1px solid ${currentStyle.border}`,
+        background: currentStyle.bg,
+        color: currentStyle.color,
+        height: '103px',
+        width: '99px',
+        borderRadius: '3px',
+        position: 'fixed',
+        top: '429px',
+        left: '867px',
+        zIndex: 1,
+      }}
+    >
+      {content}
+    </Box>
+  );
+};
+
 const App = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   return (
@@ -115,8 +182,8 @@ const App = () => {
     >
       <DragItemContext.Provider
         value={{
-          selectedId,
-          setSelectedId,
+          selectedName: selectedId,
+          setSelectedName: setSelectedId,
         }}
       >
         <Box
@@ -130,6 +197,7 @@ const App = () => {
           }}
         >
           <DragItem />
+          <DropZone />
         </Box>
       </DragItemContext.Provider>
     </DndProvider>
