@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { Box, Typography } from '@mui/material';
 
-import { StateContext } from './Demo';
+import { StateContext, useEventState } from './Demo';
 
 const dragItemStyles = {
   selected: {
@@ -16,38 +16,18 @@ const dragItemStyles = {
 };
 
 const DragItem = () => {
-  const { isDragFinished, dragItemSelected, setDragItemSelected } =
-    useContext(StateContext);
+  const { finishState, dragItemSelected } = useEventState();
 
-  const [{ isDragging, offset, didDrop }, drag] = useDrag({
+  const [{ isDragging, offset }, drag] = useDrag({
     type: 'item',
     item: { name: '陳先生' },
     collect(monitor) {
       return {
         isDragging: monitor.isDragging(),
         offset: monitor.getDifferenceFromInitialOffset(),
-        didDrop: monitor.didDrop(),
       };
     },
   });
-
-  useEffect(() => {
-    if (isDragging) {
-      setDragItemSelected(true);
-    }
-  }, [isDragging]);
-
-  useEffect(() => {
-    if (didDrop) {
-      setDragItemSelected(false);
-    }
-  }, [didDrop]);
-
-  useEffect(() => {
-    if (isDragFinished) {
-      setDragItemSelected(false);
-    }
-  }, [isDragFinished]);
 
   const style = dragItemSelected
     ? dragItemStyles.selected
@@ -74,6 +54,7 @@ const DragItem = () => {
         justifyContent: 'space-between',
         transform: `translate(${offset?.x || 0}px, ${offset?.y || 0}px)`,
       }}
+      onClick={finishState}
     >
       <Box
         sx={{

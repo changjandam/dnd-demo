@@ -124,11 +124,13 @@ const Demo = () => {
           {coverItems && (
             <Box
               sx={{
+                position: 'fixed',
                 top: '171px',
                 left: '30px',
                 width: '205px',
                 height: '300px',
                 background: '#FFFFFF',
+                zIndex: 999,
               }}
             />
           )}
