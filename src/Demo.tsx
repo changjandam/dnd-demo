@@ -1,4 +1,4 @@
-import { createContext, FC, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import bg from './assets/bg.jpg';
@@ -15,7 +15,7 @@ const StateContext = createContext<StateContextProps>({
   setIsDragFinished: () => {},
 });
 
-const dragItemStyle = {
+const dragItemStyles = {
   selected: {
     bg: '#EDF4F7',
     border: '#006BB5',
@@ -28,10 +28,10 @@ const dragItemStyle = {
 
 const DragItem = () => {
   const [selected, setSelected] = useState(false);
-  const { isDragFinished, setIsDragFinished } = useContext(StateContext);
 
   const [{ isDragging, offset, didDrop }, drag] = useDrag({
     type: 'item',
+    item: { name: '陳先生' },
     collect(monitor) {
       return {
         isDragging: monitor.isDragging(),
@@ -40,6 +40,8 @@ const DragItem = () => {
       };
     },
   });
+
+  console.log('drag', { isDragging, offset, didDrop });
 
   useEffect(() => {
     if (isDragging) {
@@ -53,7 +55,7 @@ const DragItem = () => {
     }
   }, [didDrop]);
 
-  const style = selected ? dragItemStyle.selected : dragItemStyle.unselected;
+  const style = selected ? dragItemStyles.selected : dragItemStyles.unselected;
 
   return (
     <Box
@@ -111,8 +113,86 @@ const DragItem = () => {
   );
 };
 
+const dropZoneStyles = {
+  init: {
+    bg: '#939393',
+    border: '#939393',
+    color: '#FFFFFF',
+  },
+  selected: {
+    bg: '#EDF4F7',
+    border: '#006BB5',
+    color: '#006BB5',
+  },
+  hover: {
+    bg: '#FFFFFF',
+    border: '#CACACA',
+    color: '#383838',
+  },
+  dropped: {
+    bg: '#E57C73',
+    border: '#E57C73',
+    color: '#FFFFFF',
+  },
+};
+
 const DropZone = () => {
-  return <Box></Box>;
+  const { isDragFinished, setIsDragFinished } = useContext(StateContext);
+  const [selected, setSelected] = useState(false);
+
+  const [{ isOver, canDrop }, drop] = useDrop({
+    accept: 'item',
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+    drop: (item, monitor) => {
+      console.log('drop fn', { item, monitor });
+      setIsDragFinished(true);
+    },
+  });
+
+  const getStyle = () => {
+    if (isDragFinished) {
+      return dropZoneStyles.dropped;
+    }
+    if (isOver) {
+      return dropZoneStyles.hover;
+    }
+    if (selected) {
+      return dropZoneStyles.selected;
+    }
+    return dropZoneStyles.init;
+  };
+
+  const style = getStyle();
+
+  console.log('drop', { isDragFinished, isOver, selected, canDrop });
+
+  return (
+    <Box
+      ref={drop}
+      sx={{
+        boxSizing: 'border-box',
+        padding: '5px',
+        border: `1px solid ${style.border}`,
+        background: style.bg,
+        color: style.color,
+        height: '103px',
+        width: '99px',
+        borderRadius: '3px',
+        position: 'fixed',
+        top: '429px',
+        left: '867px',
+        zIndex: 1,
+        font: '12px/19px Noto Sans TC',
+        letterSpacing: '0.14px',
+      }}
+      onClick={() => setSelected((prev) => !prev)}
+    >
+      {isDragFinished ? '陳先生' : '廚房清潔'}
+    </Box>
+  );
 };
 
 const Demo = () => {
