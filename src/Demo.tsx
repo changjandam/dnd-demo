@@ -6,7 +6,7 @@ import bg from './assets/bg.jpg';
 import DropZone from './DropZone';
 import DragItem from './DragItem';
 
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 interface StateContextProps {
   isDragFinished: boolean;
@@ -134,6 +134,40 @@ const Demo = () => {
               }}
             />
           )}
+          <Box
+            sx={{
+              background: '#FFFFFF',
+              position: 'fixed',
+              top: '136px',
+              left: '30px',
+              display: 'flex',
+              gap: '10px',
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: '18px',
+                letterSpacing: '0.32px',
+              }}
+            >
+              可排人員
+            </Typography>
+            <Box
+              sx={{
+                fontSize: '15px',
+                color: '#FFFFFF',
+                background: '#DD6763',
+                borderRadius: '50%',
+                width: '25px',
+                height: '25px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {isDragFinished ? '2' : '3'}
+            </Box>
+          </Box>
         </Box>
       </DndProvider>
     </StateContext.Provider>
